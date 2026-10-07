@@ -1,7 +1,26 @@
 /* =========================================
    SCF - SMART COINLET FIRM
    MAIN JAVASCRIPT
+   SUPABASE CONNECTED VERSION
 ========================================= */
+
+
+/* =========================================
+   SUPABASE CONNECTION
+========================================= */
+
+const SUPABASE_URL =
+  "https://dqyuawfuynunjzgchmru.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_nyM-BBoj8d5toFpNQbGBIg_Oc0nGRTb";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
 
 /* =========================================
@@ -10,19 +29,22 @@
 
 function showSection(sectionId) {
 
-  const sections = document.querySelectorAll(".page-section");
+  const sections =
+    document.querySelectorAll(".page-section");
 
   sections.forEach(function(section) {
     section.classList.remove("active");
   });
 
-  const selectedSection = document.getElementById(sectionId);
+  const selectedSection =
+    document.getElementById(sectionId);
 
   if (selectedSection) {
     selectedSection.classList.add("active");
   }
 
-  const menu = document.getElementById("mainMenu");
+  const menu =
+    document.getElementById("mainMenu");
 
   if (menu) {
     menu.classList.remove("show");
@@ -41,7 +63,8 @@ function showSection(sectionId) {
 
 function toggleMenu() {
 
-  const menu = document.getElementById("mainMenu");
+  const menu =
+    document.getElementById("mainMenu");
 
   if (menu) {
     menu.classList.toggle("show");
@@ -53,20 +76,38 @@ function toggleMenu() {
    ACCOUNT REGISTRATION
 ========================================= */
 
-function registerUser(event) {
+async function registerUser(event) {
 
   event.preventDefault();
 
-  const name = document.getElementById("fullName").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const whatsapp = document.getElementById("whatsapp").value.trim();
-  const password = document.getElementById("password").value;
+  const name =
+    document.getElementById("fullName").value.trim();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const whatsapp =
+    document.getElementById("whatsapp").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
   const confirmPassword =
     document.getElementById("confirmPassword").value;
 
 
-  /* Check password */
+  if (!name || !phone || !email || !whatsapp) {
+
+    alert(
+      "Please complete all required fields."
+    );
+
+    return;
+  }
+
 
   if (password !== confirmPassword) {
 
@@ -76,61 +117,126 @@ function registerUser(event) {
   }
 
 
-  /* Basic password requirement */
-
   if (password.length < 6) {
 
-    alert("Password must contain at least 6 characters.");
+    alert(
+      "Password must contain at least 6 characters."
+    );
 
     return;
   }
 
 
-  /* Create temporary user record */
+  try {
 
-  const user = {
-
-    name: name,
-
-    phone: phone,
-
-    email: email,
-
-    whatsapp: whatsapp,
-
-    level: 1,
-
-    balance: 0,
-
-    status: "pending",
-
-    writingAccount: false,
-
-    createdAt: new Date().toISOString()
-
-  };
+    const {
+      data: authData,
+      error: authError
+    } =
+      await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+      });
 
 
-  /*
-     IMPORTANT:
+    if (authError) {
 
-     This currently stores the account locally
-     in the browser.
+      console.error(authError);
 
-     Later, SCF will be connected to a real
-     authentication/database system.
-  */
+      alert(
+        "Registration failed: " +
+        authError.message
+      );
 
-  localStorage.setItem(
-    "scfUser",
-    JSON.stringify(user)
-  );
+      return;
+    }
 
 
-  /* Show activation page */
+    if (!authData.user) {
 
-  showSection("activation");
+      alert(
+        "The account could not be created. Please try again."
+      );
 
+      return;
+    }
+
+
+    const userId =
+      authData.user.id;
+
+
+    const {
+      error: profileError
+    } =
+      await supabaseClient
+        .from("users")
+        .insert([{
+
+          id: userId,
+          full_name: name,
+          phone: phone,
+          gmail: email,
+          whatsapp: whatsapp,
+          country: "Kenya",
+          level: 1,
+          status: "pending"
+
+        }]);
+
+
+    if (profileError) {
+
+      console.error(profileError);
+
+      alert(
+        "Your account was created, but your SCF profile could not be saved.\n\n" +
+        profileError.message
+      );
+
+      return;
+    }
+
+
+    const user = {
+
+      id: userId,
+      name: name,
+      phone: phone,
+      email: email,
+      whatsapp: whatsapp,
+      country: "Kenya",
+      level: 1,
+      balance: 0,
+      status: "pending"
+
+    };
+
+
+    localStorage.setItem(
+      "scfUser",
+      JSON.stringify(user)
+    );
+
+
+    alert(
+      "Your SCF account has been created successfully.\n\n" +
+      "Please wait while we verify and approve your account."
+    );
+
+
+    showSection("activation");
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Something went wrong during registration."
+    );
+
+  }
 }
 
 
@@ -138,7 +244,7 @@ function registerUser(event) {
    LOGIN
 ========================================= */
 
-function loginUser(event) {
+async function loginUser(event) {
 
   event.preventDefault();
 
@@ -149,56 +255,126 @@ function loginUser(event) {
     document.getElementById("loginPassword").value;
 
 
-  const savedUser =
-    localStorage.getItem("scfUser");
-
-
-  if (!savedUser) {
+  if (!email || !password) {
 
     alert(
-      "No SCF account was found on this device. Please create an account first."
+      "Please enter your Gmail and password."
     );
 
-    showSection("signup");
-
     return;
   }
 
 
-  const user = JSON.parse(savedUser);
+  try {
+
+    const {
+      data: authData,
+      error: authError
+    } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email: email,
+        password: password
+
+      });
 
 
-  if (email !== user.email) {
+    if (authError) {
 
-    alert("Incorrect Gmail.");
+      console.error(authError);
 
-    return;
+      alert(
+        "Login failed: " +
+        authError.message
+      );
+
+      return;
+    }
+
+
+    if (!authData.user) {
+
+      alert(
+        "Login could not be completed."
+      );
+
+      return;
+    }
+
+
+    const userId =
+      authData.user.id;
+
+
+    const {
+      data: userProfile,
+      error: profileError
+    } =
+      await supabaseClient
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+
+    if (profileError) {
+
+      console.error(profileError);
+
+      alert(
+        "Your SCF profile could not be found."
+      );
+
+      return;
+    }
+
+
+    if (userProfile.status !== "approved") {
+
+      alert(
+        "Your account is still pending approval.\n\n" +
+        "Please wait while SCF verifies your account."
+      );
+
+      showSection("activation");
+
+      return;
+    }
+
+
+    const user = {
+
+      id: userProfile.id,
+      name: userProfile.full_name,
+      phone: userProfile.phone,
+      email: userProfile.gmail,
+      whatsapp: userProfile.whatsapp,
+      country: userProfile.country,
+      level: Number(userProfile.level) || 1,
+      balance: 0,
+      status: userProfile.status
+
+    };
+
+
+    localStorage.setItem(
+      "scfUser",
+      JSON.stringify(user)
+    );
+
+
+    showDashboard(user);
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Something went wrong while logging in."
+    );
+
   }
-
-
-  /*
-     This is only a temporary front-end login.
-
-     Real password authentication will be added
-     when SCF is connected to a proper backend.
-  */
-
-  if (!password) {
-
-    alert("Please enter your password.");
-
-    return;
-  }
-
-
-  alert(
-    "Welcome back to SCF, " +
-    user.name +
-    "!"
-  );
-
-
-  showDashboard(user);
 }
 
 
@@ -217,7 +393,8 @@ function showDashboard(user) {
     dashboard =
       document.createElement("section");
 
-    dashboard.id = "dashboard";
+    dashboard.id =
+      "dashboard";
 
     dashboard.className =
       "page-section active";
@@ -236,7 +413,8 @@ function showDashboard(user) {
         </h2>
 
         <p>
-          Welcome, <strong>${user.name}</strong>.
+          Welcome,
+          <strong>${user.name}</strong>.
         </p>
 
         <p>
@@ -246,8 +424,11 @@ function showDashboard(user) {
 
         <p>
           Wallet balance:
-          <strong>KES ${user.balance.toFixed(2)}</strong>
+          <strong>
+            KES ${Number(user.balance || 0).toFixed(2)}
+          </strong>
         </p>
+
 
         <div class="features">
 
@@ -289,9 +470,12 @@ function showDashboard(user) {
 
         </div>
 
+
         ${
           user.level >= 4
+
           ? `
+
             <div
               class="feature-card"
               style="margin-top:20px;"
@@ -318,8 +502,11 @@ function showDashboard(user) {
               </button>
 
             </div>
+
           `
+
           : `
+
             <div
               class="feature-card"
               style="margin-top:20px;"
@@ -339,6 +526,7 @@ function showDashboard(user) {
               </p>
 
             </div>
+
           `
         }
 
@@ -347,9 +535,13 @@ function showDashboard(user) {
     `;
 
 
-    document
-      .querySelector("main")
-      .appendChild(dashboard);
+    const main =
+      document.querySelector("main");
+
+
+    if (main) {
+      main.appendChild(dashboard);
+    }
 
   }
 
@@ -364,6 +556,7 @@ function showDashboard(user) {
 
 
   dashboard.classList.add("active");
+
 
   window.scrollTo({
     top: 0,
@@ -393,10 +586,11 @@ function openWritingAccount() {
   }
 
 
-  const user = JSON.parse(savedUser);
+  const user =
+    JSON.parse(savedUser);
 
 
-  if (user.level < 4) {
+  if (Number(user.level) < 4) {
 
     alert(
       "Academic Writing Account unlocks at Level 4."
@@ -410,13 +604,33 @@ function openWritingAccount() {
     "Welcome to your SCF Academic Writing Account."
   );
 
+}
 
-  /*
-     The full academic writing marketplace,
-     task submission system, task approval,
-     earnings and writing history will be
-     added in the next development stages.
-  */
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logoutUser() {
+
+  try {
+
+    await supabaseClient.auth.signOut();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+
+  localStorage.removeItem("scfUser");
+
+  showSection("login");
+
+  alert(
+    "You have been logged out."
+  );
 
 }
 
