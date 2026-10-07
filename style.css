@@ -1,0 +1,571 @@
+/* =========================================
+   SCF - SMART COINLET FIRM
+   MAIN STYLESHEET
+========================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 18, 35, 0.96),
+      rgba(8, 43, 67, 0.94)
+    );
+  color: #ffffff;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.scf-header {
+  width: 100%;
+  min-height: 75px;
+  padding: 14px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(3, 15, 28, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scf-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #16c784, #087f5b);
+  box-shadow: 0 5px 20px rgba(22, 199, 132, 0.25);
+}
+
+.logo-area h1 {
+  font-size: 19px;
+  line-height: 1.1;
+}
+
+.logo-area p {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #9fb3c8;
+}
+
+
+/* =========================================
+   MENU BUTTON
+========================================= */
+
+.menu-button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #102d43;
+  color: #ffffff;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.menu-button:hover {
+  background: #16c784;
+}
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.main-menu {
+  display: none;
+  padding: 10px 5%;
+  background: #071b2d;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.main-menu.show {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.main-menu button {
+  border: none;
+  background: transparent;
+  color: #dce8f2;
+  text-align: left;
+  padding: 12px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.main-menu button:hover {
+  background: #102d43;
+  color: #16c784;
+}
+
+
+/* =========================================
+   PAGE SECTIONS
+========================================= */
+
+.page-section {
+  display: none;
+  min-height: calc(100vh - 150px);
+  padding: 45px 5%;
+}
+
+.page-section.active {
+  display: block;
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero {
+  min-height: 570px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+
+  background:
+    linear-gradient(
+      rgba(4, 20, 35, 0.74),
+      rgba(4, 20, 35, 0.92)
+    ),
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(22, 199, 132, 0.18),
+      transparent 45%
+    );
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 760px;
+  padding: 35px 20px;
+}
+
+.country-badge {
+  display: inline-block;
+  padding: 8px 15px;
+  border-radius: 30px;
+  background: rgba(22, 199, 132, 0.12);
+  border: 1px solid rgba(22, 199, 132, 0.35);
+  color: #7ff0c2;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+.hero h2 {
+  font-size: clamp(34px, 7vw, 65px);
+  line-height: 1.05;
+  margin-bottom: 22px;
+  letter-spacing: -1.5px;
+}
+
+.hero h2 span {
+  display: block;
+  margin-top: 8px;
+  color: #16c784;
+}
+
+.hero p {
+  max-width: 650px;
+  margin: auto;
+  color: #b9c9d7;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.hero-buttons {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primary-button,
+.secondary-button {
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: linear-gradient(135deg, #16c784, #079669);
+  box-shadow: 0 8px 25px rgba(22, 199, 132, 0.2);
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(22, 199, 132, 0.3);
+}
+
+.secondary-button {
+  color: #ffffff;
+  background: #102d43;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.secondary-button:hover {
+  background: #173c56;
+}
+
+.full-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.features {
+  max-width: 1100px;
+  margin: 30px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.feature-card {
+  padding: 27px 22px;
+  border-radius: 18px;
+  background: rgba(12, 38, 57, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(22, 199, 132, 0.4);
+}
+
+.feature-icon {
+  font-size: 31px;
+  margin-bottom: 13px;
+}
+
+.feature-card h3 {
+  margin-bottom: 9px;
+  color: #ffffff;
+}
+
+.feature-card p {
+  color: #9fb3c8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   CONTENT CARD
+========================================= */
+
+.content-card {
+  width: 100%;
+  max-width: 750px;
+  margin: 40px auto;
+  padding: 35px;
+  border-radius: 20px;
+  background: rgba(12, 38, 57, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.content-card h2 {
+  color: #16c784;
+  margin-bottom: 20px;
+  font-size: 30px;
+}
+
+.content-card p {
+  color: #b8c8d7;
+  line-height: 1.8;
+  margin-bottom: 17px;
+}
+
+
+/* =========================================
+   FORMS
+========================================= */
+
+.form-card {
+  width: 100%;
+  max-width: 470px;
+  margin: 30px auto;
+  padding: 32px;
+  border-radius: 20px;
+  background: rgba(12, 38, 57, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.form-card h2 {
+  text-align: center;
+  font-size: 29px;
+  margin-bottom: 8px;
+}
+
+.form-subtitle {
+  text-align: center;
+  color: #8fa6b9;
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.form-card label {
+  display: block;
+  margin: 14px 0 7px;
+  font-size: 13px;
+  color: #cbd8e3;
+}
+
+.form-card input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid #29465c;
+  background: #071c2e;
+  color: #ffffff;
+  outline: none;
+  font-size: 14px;
+}
+
+.form-card input:focus {
+  border-color: #16c784;
+  box-shadow: 0 0 0 3px rgba(22, 199, 132, 0.08);
+}
+
+.form-footer {
+  margin-top: 22px;
+  text-align: center;
+  color: #8fa6b9;
+  font-size: 13px;
+}
+
+.text-button {
+  border: none;
+  background: none;
+  color: #16c784;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   ACTIVATION / STATUS
+========================================= */
+
+.status-card {
+  max-width: 550px;
+  margin: 60px auto;
+  padding: 40px 30px;
+  border-radius: 22px;
+  text-align: center;
+  background: rgba(12, 38, 57, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-icon {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #16c784;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.status-card h2 {
+  margin-bottom: 15px;
+}
+
+.status-card p {
+  color: #aebfce;
+  line-height: 1.7;
+}
+
+.loading-bar {
+  width: 100%;
+  height: 7px;
+  margin: 25px 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #17354b;
+}
+
+.loading-bar div {
+  width: 55%;
+  height: 100%;
+  border-radius: 10px;
+  background: #16c784;
+  animation: loading 2s infinite ease-in-out;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(190%);
+  }
+}
+
+.small-text {
+  font-size: 12px;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+  padding: 35px 5%;
+  text-align: center;
+  background: #041321;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-logo {
+  font-size: 25px;
+  font-weight: 900;
+  color: #16c784;
+  margin-bottom: 8px;
+}
+
+footer p {
+  color: #9fb3c8;
+  font-size: 13px;
+}
+
+footer .copyright {
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .scf-header {
+    padding: 12px 4%;
+  }
+
+  .logo-area h1 {
+    font-size: 16px;
+  }
+
+  .logo-area p {
+    font-size: 10px;
+  }
+
+  .scf-logo {
+    width: 43px;
+    height: 43px;
+    font-size: 16px;
+  }
+
+  .page-section {
+    padding: 25px 4%;
+  }
+
+  .hero {
+    min-height: 500px;
+    border-radius: 20px;
+  }
+
+  .hero h2 {
+    font-size: 39px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .content-card,
+  .form-card {
+    padding: 25px 20px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .hero-buttons button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================
+   TABLET / DESKTOP
+========================================= */
+
+@media (min-width: 701px) {
+
+  .main-menu.show {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .main-menu button {
+    text-align: center;
+  }
+
+  }
