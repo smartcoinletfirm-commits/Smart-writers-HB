@@ -1,442 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- =========================
+     SIGN UP
+========================= -->
 
-  <title>SCF - Smart Coinlet Firm</title>
+<section id="signup" class="page-section">
 
-  <meta
-    name="description"
-    content="Smart Coinlet Firm - Earn, learn, complete tasks and grow with SCF."
-  >
+  <div class="form-card">
 
-  <link rel="stylesheet" href="style.css">
-</head>
+    <h2>Create SCF Account</h2>
 
-<body>
-
-  <!-- =========================
-       SCF HEADER
-  ========================== -->
-
-  <header class="scf-header">
-
-    <div class="logo-area">
-      <div class="scf-logo">SCF</div>
-
-      <div>
-        <h1>Smart Coinlet Firm</h1>
-        <p>Earn • Learn • Grow</p>
-      </div>
-    </div>
-
-    <button
-      class="menu-button"
-      onclick="toggleMenu()"
-      aria-label="Open menu"
-    >
-      ☰
-    </button>
-
-  </header>
-
-
-  <!-- =========================
-       NAVIGATION
-  ========================== -->
-
-  <nav id="mainMenu" class="main-menu">
-
-    <button onclick="showSection('home')">
-      Home
-    </button>
-
-    <button onclick="showSection('about')">
-      About SCF
-    </button>
-
-    <button onclick="showSection('login')">
-      Login
-    </button>
-
-    <button onclick="showSection('signup')">
-      Create Account
-    </button>
-
-  </nav>
-
-
-  <!-- =========================
-       MAIN CONTENT
-  ========================== -->
-
-  <main>
-
-    <!-- HOME -->
-
-    <section id="home" class="page-section active">
-
-      <div class="hero">
-
-        <div class="hero-content">
-
-          <div class="country-badge">
-            🇰🇪 Kenya
-          </div>
-
-          <h2>
-            Welcome to
-            <span>Smart Coinlet Firm</span>
-          </h2>
-
-          <p>
-            A smart digital platform where users can
-            complete tasks, develop skills, earn rewards
-            and progress through different levels.
-          </p>
-
-          <div class="hero-buttons">
-
-            <button
-              class="primary-button"
-              onclick="showSection('signup')"
-            >
-              Create Account
-            </button>
-
-            <button
-              class="secondary-button"
-              onclick="showSection('login')"
-            >
-              Login
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- FEATURES -->
-
-      <div class="features">
-
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
-          <h3>Earn</h3>
-          <p>
-            Complete available tasks and earn
-            according to the SCF system.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📚</div>
-          <h3>Learn</h3>
-          <p>
-            Develop useful digital and academic
-            skills as you progress.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🚀</div>
-          <h3>Grow</h3>
-          <p>
-            Advance through SCF levels and unlock
-            additional opportunities.
-          </p>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         ABOUT
-    ========================== -->
-
-    <section id="about" class="page-section">
-
-      <div class="content-card">
-
-        <h2>About SCF</h2>
-
-        <p>
-          Smart Coinlet Firm, abbreviated as SCF, is
-          designed as a digital platform that combines
-          tasks, learning opportunities, rewards and
-          user progression.
-        </p>
-
-        <p>
-          Users can create an account, complete eligible
-          activities and progress through different
-          levels.
-        </p>
-
-        <p>
-          As users progress, additional features and
-          opportunities can become available to them.
-        </p>
-
-        <button
-          class="primary-button"
-          onclick="showSection('signup')"
-        >
-          Join SCF
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         LOGIN
-    ========================== -->
-
-    <section id="login" class="page-section">
-
-      <div class="form-card">
-
-        <h2>SCF Login</h2>
-
-        <p class="form-subtitle">
-          Access your SCF account
-        </p>
-
-        <form onsubmit="loginUser(event)">
-
-          <label for="loginEmail">
-            Gmail
-          </label>
-
-          <input
-            type="email"
-            id="loginEmail"
-            placeholder="Enter your Gmail"
-            required
-          >
-
-          <label for="loginPassword">
-            Password
-          </label>
-
-          <input
-            type="password"
-            id="loginPassword"
-            placeholder="Enter your password"
-            required
-          >
-
-          <button
-            type="submit"
-            class="primary-button full-button"
-          >
-            Login
-          </button>
-
-        </form>
-
-        <p class="form-footer">
-          Don't have an account?
-          <button
-            class="text-button"
-            onclick="showSection('signup')"
-          >
-            Create one
-          </button>
-        </p>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         SIGN UP
-    ========================== -->
-
-    <section id="signup" class="page-section">
-
-      <div class="form-card">
-
-        <h2>Create SCF Account</h2>
-
-        <p class="form-subtitle">
-          Start your SCF journey
-        </p>
-
-        <form onsubmit="registerUser(event)">
-
-          <label for="fullName">
-            Full Name
-          </label>
-
-          <input
-            type="text"
-            id="fullName"
-            placeholder="Enter your full name"
-            required
-          >
-
-
-          <label for="phone">
-            Phone Number
-          </label>
-
-          <input
-            type="tel"
-            id="phone"
-            placeholder="e.g. 07XXXXXXXX"
-            required
-          >
-
-
-          <label for="email">
-            Gmail
-          </label>
-
-          <input
-            type="email"
-            id="email"
-            placeholder="Enter your Gmail"
-            required
-          >
-
-
-          <label for="whatsapp">
-            WhatsApp Number
-          </label>
-
-          <input
-            type="tel"
-            id="whatsapp"
-            placeholder="Enter your WhatsApp number"
-            required
-          >
-
-
-          <label for="password">
-            Password
-          </label>
-
-          <input
-            type="password"
-            id="password"
-            placeholder="Create a password"
-            required
-          >
-
-
-          <label for="confirmPassword">
-            Confirm Password
-          </label>
-
-          <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm your password"
-            required
-          >
-
-
-          <button
-            type="submit"
-            class="primary-button full-button"
-          >
-            Create Account
-          </button>
-
-        </form>
-
-        <p class="form-footer">
-          Already have an account?
-          <button
-            class="text-button"
-            onclick="showSection('login')"
-          >
-            Login
-          </button>
-        </p>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         ACTIVATION
-    ========================== -->
-
-    <section id="activation" class="page-section">
-
-      <div class="status-card">
-
-        <div class="status-icon">
-          ✓
-        </div>
-
-        <h2>Account Created</h2>
-
-        <p>
-          Your SCF account has been created successfully.
-        </p>
-
-        <p>
-          Kindly wait a moment as we verify your account.
-        </p>
-
-        <div class="loading-bar">
-          <div></div>
-        </div>
-
-        <p class="small-text">
-          Account verification is required before
-          accessing the SCF dashboard.
-        </p>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- =========================
-       FOOTER
-  ========================== -->
-
-  <footer>
-
-    <div class="footer-logo">
-      SCF
-    </div>
-
-    <p>
-      Smart Coinlet Firm
+    <p class="form-subtitle">
+      Start your SCF journey
     </p>
 
-    <p class="copyright">
-      © 2026 SCF. All rights reserved.
+    <form onsubmit="registerUser(event)">
+
+      <label for="fullName">
+        Full Name
+      </label>
+
+      <input
+        type="text"
+        id="fullName"
+        placeholder="Enter your full name"
+        required
+      >
+
+
+      <label for="phone">
+        Phone Number
+      </label>
+
+      <input
+        type="tel"
+        id="phone"
+        placeholder="e.g. 07XXXXXXXX"
+        required
+      >
+
+
+      <label for="email">
+        Gmail
+      </label>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your Gmail"
+        required
+      >
+
+
+      <label for="whatsapp">
+        WhatsApp Number
+      </label>
+
+      <input
+        type="tel"
+        id="whatsapp"
+        placeholder="Enter your WhatsApp number"
+        required
+      >
+
+
+      <!-- =========================
+           REFERRAL CODE
+      ========================== -->
+
+      <label for="referralCode">
+        Referral Code
+        <span style="opacity:0.7;">(Optional)</span>
+      </label>
+
+      <input
+        type="text"
+        id="referralCode"
+        placeholder="e.g. SCF-8A71F2C9"
+        autocomplete="off"
+      >
+
+      <p class="small-text">
+        Have an SCF referral code? Enter it here.
+      </p>
+
+
+      <label for="password">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Create a password"
+        required
+      >
+
+
+      <label for="confirmPassword">
+        Confirm Password
+      </label>
+
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Confirm your password"
+        required
+      >
+
+
+      <button
+        type="submit"
+        class="primary-button full-button"
+      >
+        Create Account
+      </button>
+
+    </form>
+
+    <p class="form-footer">
+      Already have an account?
+
+      <button
+        class="text-button"
+        onclick="showSection('login')"
+      >
+        Login
+      </button>
     </p>
 
-  </footer>
+  </div>
 
-
-  <!-- =========================
-       SUPABASE
-  ========================== -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- SCF JAVASCRIPT -->
-
-  <script src="script.js"></script>
-
-</body>
-  </html>
+</section>
