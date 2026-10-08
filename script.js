@@ -1,6 +1,5 @@
 /* =========================================
    SCF - SMART COINLET FIRM
-   MAIN JAVASCRIPT
    SUPABASE CONNECTED VERSION
 ========================================= */
 
@@ -14,7 +13,6 @@ const SUPABASE_URL =
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_nyM-BBoj8d5toFpNQbGBIg_Oc0nGRTb";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -80,17 +78,34 @@ async function registerUser(event) {
 
   event.preventDefault();
 
+  /* -----------------------------------------
+     GET FORM VALUES
+  ----------------------------------------- */
+
   const name =
-    document.getElementById("fullName").value.trim();
+    document.getElementById("fullName")
+      .value.trim();
 
   const phone =
-    document.getElementById("phone").value.trim();
+    document.getElementById("phone")
+      .value.trim();
 
   const email =
-    document.getElementById("email").value.trim();
+    document.getElementById("email")
+      .value.trim()
+      .toLowerCase();
 
   const whatsapp =
-    document.getElementById("whatsapp").value.trim();
+    document.getElementById("whatsapp")
+      .value.trim();
+
+  const referralInput =
+    document.getElementById("referralCode");
+
+  const referralCode =
+    referralInput
+      ? referralInput.value.trim().toUpperCase()
+      : "";
 
   const password =
     document.getElementById("password").value;
@@ -98,6 +113,10 @@ async function registerUser(event) {
   const confirmPassword =
     document.getElementById("confirmPassword").value;
 
+
+  /* -----------------------------------------
+     BASIC VALIDATION
+  ----------------------------------------- */
 
   if (!name || !phone || !email || !whatsapp) {
 
@@ -111,7 +130,9 @@ async function registerUser(event) {
 
   if (password !== confirmPassword) {
 
-    alert("Passwords do not match.");
+    alert(
+      "Passwords do not match."
+    );
 
     return;
   }
@@ -129,22 +150,76 @@ async function registerUser(event) {
 
   try {
 
+    /* -----------------------------------------
+       CHECK REFERRAL CODE BEFORE CREATING ACCOUNT
+    ----------------------------------------- */
+
+    if (referralCode) {
+
+      const {
+        data: referralValid,
+        error: referralError
+      } = await supabaseClient.rpc(
+        "check_scf_referral_code",
+        {
+          referral_code_input: referralCode
+        }
+      );
+
+
+      if (referralError) {
+
+        console.error(
+          "Referral check error:",
+          referralError
+        );
+
+        alert(
+          "We could not verify the referral code. Please try again."
+        );
+
+        return;
+      }
+
+
+      if (!referralValid) {
+
+        alert(
+          "The referral code you entered is invalid.\n\n" +
+          "Please check the code and try again."
+        );
+
+        return;
+      }
+    }
+
+
+    /* -----------------------------------------
+       CREATE SUPABASE AUTH ACCOUNT
+    ----------------------------------------- */
+
     const {
       data: authData,
       error: authError
     } =
       await supabaseClient.auth.signUp({
+
         email: email,
+
         password: password
+
       });
 
 
     if (authError) {
 
-      console.error(authError);
+      console.error(
+        "Auth error:",
+        authError
+      );
 
       alert(
-        "Registration failed: " +
+        "Registration failed:\n\n" +
         authError.message
       );
 
@@ -166,7 +241,12 @@ async function registerUser(event) {
       authData.user.id;
 
 
+    /* -----------------------------------------
+       CREATE SCF PROFILE
+    ----------------------------------------- */
+
     const {
+      data: profile,
       error: profileError
     } =
       await supabaseClient
@@ -174,20 +254,57 @@ async function registerUser(event) {
         .insert([{
 
           id: userId,
-          full_name: name,
-          phone: phone,
-          gmail: email,
-          whatsapp: whatsapp,
-          country: "Kenya",
-          level: 1,
-          status: "pending"
 
-        }]);
+          full_name: name,
+
+          phone: phone,
+
+          gmail: email,
+
+          whatsapp_number: whatsapp,
+
+          country: "Kenya",
+
+          referred_by:
+            referralCode || null,
+
+          role: "user",
+
+          approved: false,
+
+          activated: false,
+
+          account_status: "pending",
+
+          level: 1,
+
+          bonus: 270,
+
+          balance: 0,
+
+          loan_limit: 0,
+
+          referral_count: 0,
+
+          invites: 0,
+
+          total_withdrawn: 0,
+
+          total_earned: 0,
+
+          tasks_completed: 0
+
+        }])
+        .select()
+        .single();
 
 
     if (profileError) {
 
-      console.error(profileError);
+      console.error(
+        "Profile error:",
+        profileError
+      );
 
       alert(
         "Your account was created, but your SCF profile could not be saved.\n\n" +
@@ -198,17 +315,90 @@ async function registerUser(event) {
     }
 
 
+    /* -----------------------------------------
+       APPLY REFERRAL
+    ----------------------------------------- */
+
+    if (referralCode) {
+
+      const {
+        error: referralApplyError
+      } =
+        await supabaseClient.rpc(
+          "apply_scf_referral",
+          {
+            referral_code_input: referralCode,
+            new_user_id: userId
+          }
+        );
+
+
+      if (referralApplyError) {
+
+        console.error(
+          "Referral application error:",
+          referralApplyError
+        );
+
+        /*
+          Do not cancel the account because the
+          main profile was successfully created.
+        */
+
+      }
+    }
+
+
+    /* -----------------------------------------
+       LOCAL USER DATA
+    ----------------------------------------- */
+
     const user = {
 
-      id: userId,
-      name: name,
-      phone: phone,
-      email: email,
-      whatsapp: whatsapp,
-      country: "Kenya",
-      level: 1,
-      balance: 0,
-      status: "pending"
+      id: profile.id,
+
+      name: profile.full_name,
+
+      phone: profile.phone,
+
+      email: profile.gmail,
+
+      whatsapp: profile.whatsapp_number,
+
+      country: profile.country,
+
+      referralCode:
+        profile.referral_code || "",
+
+      referredBy:
+        profile.referred_by || "",
+
+      referralCount:
+        Number(profile.referral_count) || 0,
+
+      invites:
+        Number(profile.invites) || 0,
+
+      level:
+        Number(profile.level) || 1,
+
+      bonus:
+        Number(profile.bonus) || 270,
+
+      balance:
+        Number(profile.balance) || 0,
+
+      loanLimit:
+        Number(profile.loan_limit) || 0,
+
+      approved:
+        Boolean(profile.approved),
+
+      activated:
+        Boolean(profile.activated),
+
+      status:
+        profile.account_status || "pending"
 
     };
 
@@ -219,9 +409,13 @@ async function registerUser(event) {
     );
 
 
+    /* -----------------------------------------
+       SUCCESS
+    ----------------------------------------- */
+
     alert(
       "Your SCF account has been created successfully.\n\n" +
-      "Please wait while we verify and approve your account."
+      "Your account is now waiting for SCF approval."
     );
 
 
@@ -230,10 +424,14 @@ async function registerUser(event) {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Registration error:",
+      error
+    );
 
     alert(
-      "Something went wrong during registration."
+      "Something went wrong during registration.\n\n" +
+      error.message
     );
 
   }
@@ -249,10 +447,13 @@ async function loginUser(event) {
   event.preventDefault();
 
   const email =
-    document.getElementById("loginEmail").value.trim();
+    document.getElementById("loginEmail")
+      .value.trim()
+      .toLowerCase();
 
   const password =
-    document.getElementById("loginPassword").value;
+    document.getElementById("loginPassword")
+      .value;
 
 
   if (!email || !password) {
@@ -267,6 +468,10 @@ async function loginUser(event) {
 
   try {
 
+    /* -----------------------------------------
+       AUTH LOGIN
+    ----------------------------------------- */
+
     const {
       data: authData,
       error: authError
@@ -274,6 +479,7 @@ async function loginUser(event) {
       await supabaseClient.auth.signInWithPassword({
 
         email: email,
+
         password: password
 
       });
@@ -281,10 +487,13 @@ async function loginUser(event) {
 
     if (authError) {
 
-      console.error(authError);
+      console.error(
+        "Login error:",
+        authError
+      );
 
       alert(
-        "Login failed: " +
+        "Login failed:\n\n" +
         authError.message
       );
 
@@ -306,6 +515,10 @@ async function loginUser(event) {
       authData.user.id;
 
 
+    /* -----------------------------------------
+       GET SCF PROFILE
+    ----------------------------------------- */
+
     const {
       data: userProfile,
       error: profileError
@@ -319,17 +532,28 @@ async function loginUser(event) {
 
     if (profileError) {
 
-      console.error(profileError);
+      console.error(
+        "Profile error:",
+        profileError
+      );
 
       alert(
-        "Your SCF profile could not be found."
+        "Your SCF profile could not be found.\n\n" +
+        profileError.message
       );
 
       return;
     }
 
 
-    if (userProfile.status !== "approved") {
+    /* -----------------------------------------
+       APPROVAL PROTECTION
+    ----------------------------------------- */
+
+    if (
+      userProfile.approved !== true ||
+      userProfile.account_status !== "approved"
+    ) {
 
       alert(
         "Your account is still pending approval.\n\n" +
@@ -342,17 +566,61 @@ async function loginUser(event) {
     }
 
 
+    /* -----------------------------------------
+       BUILD USER OBJECT
+    ----------------------------------------- */
+
     const user = {
 
       id: userProfile.id,
-      name: userProfile.full_name,
-      phone: userProfile.phone,
-      email: userProfile.gmail,
-      whatsapp: userProfile.whatsapp,
-      country: userProfile.country,
-      level: Number(userProfile.level) || 1,
-      balance: 0,
-      status: userProfile.status
+
+      name:
+        userProfile.full_name,
+
+      phone:
+        userProfile.phone,
+
+      email:
+        userProfile.gmail,
+
+      whatsapp:
+        userProfile.whatsapp_number,
+
+      country:
+        userProfile.country,
+
+      referralCode:
+        userProfile.referral_code || "",
+
+      referredBy:
+        userProfile.referred_by || "",
+
+      referralCount:
+        Number(userProfile.referral_count) || 0,
+
+      invites:
+        Number(userProfile.invites) || 0,
+
+      level:
+        Number(userProfile.level) || 1,
+
+      bonus:
+        Number(userProfile.bonus) || 270,
+
+      balance:
+        Number(userProfile.balance) || 0,
+
+      loanLimit:
+        Number(userProfile.loan_limit) || 0,
+
+      approved:
+        Boolean(userProfile.approved),
+
+      activated:
+        Boolean(userProfile.activated),
+
+      status:
+        userProfile.account_status || "approved"
 
     };
 
@@ -368,7 +636,10 @@ async function loginUser(event) {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Login exception:",
+      error
+    );
 
     alert(
       "Something went wrong while logging in."
@@ -379,7 +650,7 @@ async function loginUser(event) {
 
 
 /* =========================================
-   BASIC DASHBOARD
+   DASHBOARD
 ========================================= */
 
 function showDashboard(user) {
@@ -429,6 +700,66 @@ function showDashboard(user) {
           </strong>
         </p>
 
+
+        <!-- REFERRAL AREA -->
+
+        <div
+          class="feature-card"
+          style="margin-top:20px;"
+        >
+
+          <div class="feature-icon">
+            🔗
+          </div>
+
+          <h3>
+            Your SCF Referral Code
+          </h3>
+
+          <p>
+            Share your code with friends and invite
+            new members to SCF.
+          </p>
+
+          <div
+            style="
+              padding:12px;
+              margin:12px 0;
+              border-radius:8px;
+              background:rgba(0,0,0,0.15);
+              font-weight:bold;
+              letter-spacing:1px;
+            "
+          >
+            ${user.referralCode || "Generating..."}
+          </div>
+
+          <button
+            class="primary-button"
+            onclick="copyReferralCode()"
+          >
+            Copy Referral Code
+          </button>
+
+          <button
+            class="secondary-button"
+            style="margin-top:8px;"
+            onclick="copyReferralLink()"
+          >
+            Copy Referral Link
+          </button>
+
+          <p style="margin-top:10px;">
+            Invites:
+            <strong>
+              ${Number(user.invites || 0)}
+            </strong>
+          </p>
+
+        </div>
+
+
+        <!-- FEATURES -->
 
         <div class="features">
 
@@ -567,6 +898,159 @@ function showDashboard(user) {
 
 
 /* =========================================
+   COPY REFERRAL CODE
+========================================= */
+
+async function copyReferralCode() {
+
+  const savedUser =
+    localStorage.getItem("scfUser");
+
+  if (!savedUser) {
+
+    alert("Please login first.");
+
+    return;
+  }
+
+
+  const user =
+    JSON.parse(savedUser);
+
+
+  if (!user.referralCode) {
+
+    alert(
+      "Your referral code is not available yet."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      user.referralCode
+    );
+
+    alert(
+      "Referral code copied:\n\n" +
+      user.referralCode
+    );
+
+  } catch (error) {
+
+    alert(
+      "Your referral code is:\n\n" +
+      user.referralCode
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   COPY REFERRAL LINK
+========================================= */
+
+async function copyReferralLink() {
+
+  const savedUser =
+    localStorage.getItem("scfUser");
+
+  if (!savedUser) {
+
+    alert("Please login first.");
+
+    return;
+  }
+
+
+  const user =
+    JSON.parse(savedUser);
+
+
+  if (!user.referralCode) {
+
+    alert(
+      "Your referral code is not available yet."
+    );
+
+    return;
+  }
+
+
+  const referralLink =
+    window.location.origin +
+    window.location.pathname +
+    "?ref=" +
+    encodeURIComponent(
+      user.referralCode
+    );
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      referralLink
+    );
+
+    alert(
+      "Referral link copied:\n\n" +
+      referralLink
+    );
+
+  } catch (error) {
+
+    alert(
+      "Your referral link is:\n\n" +
+      referralLink
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   AUTOMATIC REFERRAL FROM URL
+========================================= */
+
+function loadReferralFromURL() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const referral =
+    params.get("ref");
+
+
+  if (!referral) {
+    return;
+  }
+
+
+  const referralInput =
+    document.getElementById(
+      "referralCode"
+    );
+
+
+  if (referralInput) {
+
+    referralInput.value =
+      referral.toUpperCase();
+
+  }
+
+}
+
+
+/* =========================================
    WRITING ACCOUNT
 ========================================= */
 
@@ -578,7 +1062,9 @@ function openWritingAccount() {
 
   if (!savedUser) {
 
-    alert("Please login first.");
+    alert(
+      "Please login first."
+    );
 
     showSection("login");
 
@@ -624,9 +1110,13 @@ async function logoutUser() {
   }
 
 
-  localStorage.removeItem("scfUser");
+  localStorage.removeItem(
+    "scfUser"
+  );
+
 
   showSection("login");
+
 
   alert(
     "You have been logged out."
@@ -646,6 +1136,18 @@ document.addEventListener(
     console.log(
       "SCF - Smart Coinlet Firm loaded successfully."
     );
+
+
+    /*
+      If someone opens a referral link like:
+
+      ?ref=SCF-XXXXXXXX
+
+      the code is automatically placed
+      inside the signup form.
+    */
+
+    loadReferralFromURL();
 
   }
 );
